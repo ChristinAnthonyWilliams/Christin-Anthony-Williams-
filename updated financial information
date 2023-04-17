@@ -1,0 +1,31 @@
+@Override
+public void onError(Exception error) {
+  if (error instanceof ErrorWithResponse) {
+    ErrorWithResponse errorWithResponse = (ErrorWithResponse) error;
+    BraintreeError cardErrors = errorWithResponse.errorFor("creditCard");
+    if (cardErrors != null) {
+      // There is an issue with the credit card.
+      BraintreeError expirationMonthError = cardErrors.errorFor("expirationMonth");
+      if (expirationMonthError != null) {
+        // There is an issue with the expiration month.
+        setErrorMessage(expirationMonthError.getMessage());
+
+      }
+    }
+  }
+}@Override
+public void onCancel(int requestCode) {
+  // Use this to handle a canceled activity, if the given requestCode is important.
+  // You may want to use this callback to hide loading indicators, and prepare your UI for input
+}
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+  super.onCreate(savedInstanceState);
+
+  try {
+    mBraintreeFragment = BraintreeFragment.newInstance(this, mAuthorization);
+    // mBraintreeFragment is ready to use!
+  } catch (InvalidArgumentException e) {
+    // There was an issue with your authorization string.
+  }
+}
